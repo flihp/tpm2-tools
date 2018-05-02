@@ -156,6 +156,10 @@ int tpm2_tool_onrun(TSS2_SYS_CONTEXT *sapi_context, tpm2_option_flags flags) {
             goto out;
         }
     }
+    result = tpm2_session_save(sapi_context, s, ctx.session_path);
+    if (!result) {
+        LOG_ERR("Failed to save policy to file \"%s\"", ctx.session_path);
+    }
 
     rc = 0;
 
