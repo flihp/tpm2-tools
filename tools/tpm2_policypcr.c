@@ -117,7 +117,7 @@ int tpm2_tool_onrun(TSS2_SYS_CONTEXT *sapi_context, tpm2_option_flags flags) {
         return rc;
     }
 
-    s = tpm2_session_restore(ctx.session_path);
+    s = tpm2_session_restore(sapi_context, ctx.session_path);
     if (!s) {
         return rc;
     }
