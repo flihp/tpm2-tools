@@ -169,7 +169,6 @@ check_PROGRAMS = \
     test/unit/test_tpm2_error
 
 TESTS += $(ALL_SYSTEM_TESTS)
-XFAIL_TESTS = test/integration/tests/tcti/abrmd/extended-sessions.sh
 
 test_unit_test_string_bytes_CFLAGS   = $(AM_CFLAGS) $(CMOCKA_CFLAGS)
 test_unit_test_string_bytes_LDADD    = $(CMOCKA_LIBS) $(LIB_COMMON) $(LDADD)
