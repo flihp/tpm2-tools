@@ -233,7 +233,8 @@ check_PROGRAMS = \
     test/unit/test_options \
     test/unit/test_cc_util \
     test/unit/test_tpm2_eventlog \
-    test/unit/test_tpm2_eventlog_ascii
+    test/unit/test_tpm2_eventlog_ascii \
+    test/unit/test_tpm2_eventlog_files
 
 TESTS += $(ALL_SYSTEM_TESTS)
 
