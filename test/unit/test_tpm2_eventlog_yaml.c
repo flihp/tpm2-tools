@@ -89,7 +89,7 @@ static void test_yaml_event2_nosize(void **state) {
     TCG_EVENT2 *event = (TCG_EVENT2*)buf;
 
     event->EventSize = 6;
-    assert_false(yaml_event2(event, sizeof(*event) - 1));
+    assert_false(yaml_event2(event, sizeof(*event) - 1, EV_EFI_ACTION));
 }
 static void test_yaml_event2_nobuf(void **state) {
 
@@ -98,7 +98,7 @@ static void test_yaml_event2_nobuf(void **state) {
     TCG_EVENT2 *event = (TCG_EVENT2*)buf;
 
     event->EventSize = 6;
-    assert_false(yaml_event2(event, sizeof(*event) + 3));
+    assert_false(yaml_event2(event, sizeof(*event) + 3, EV_EFI_ACTION));
 }
 static void test_yaml_event2(void **state) {
 
@@ -107,7 +107,7 @@ static void test_yaml_event2(void **state) {
     TCG_EVENT2 *event = (TCG_EVENT2*)buf;
 
     event->EventSize = 6;
-    assert_true(yaml_event2(event, sizeof(*event) + 6));
+    assert_true(yaml_event2(event, sizeof(*event) + 6, EV_EFI_ACTION));
 }
 static void test_yaml_event2_callback_null(void **state){
 

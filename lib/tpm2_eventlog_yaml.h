@@ -20,8 +20,7 @@ bool yaml_event2data(TCG_EVENT2 const *event, UINT32 type);
 bool yaml_digest2_callback(TCG_DIGEST2 const *digest, size_t size, void *data);
 bool yaml_event2hdr_callback(TCG_EVENT_HEADER2 const *event_hdr, size_t size,
                              void *data);
-bool yaml_event2data_callback(TCG_EVENT2 const *event, UINT32 type,
-                              bool validated, void *data);
+bool yaml_event2data_callback(TCG_EVENT2 const *event, UINT32 type, void *data);
 
 bool yaml_eventlog(UINT8 const *eventlog, size_t size);
 
