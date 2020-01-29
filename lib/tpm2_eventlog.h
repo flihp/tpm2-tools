@@ -13,6 +13,8 @@ typedef bool (*DIGEST2_CALLBACK)(TCG_DIGEST2 const *digest, size_t size,
                                  void *data);
 typedef bool (*EVENT2_CALLBACK)(TCG_EVENT_HEADER2 const *event_hdr, size_t size,
                                 void *data);
+typedef bool (*EVENT2DATA_CALLBACK)(TCG_EVENT2 const *event, bool validated,
+                                    void *data);
 
 bool digest2_accumulator_callback(TCG_DIGEST2 const *digest, size_t size,
                                   void *data);
@@ -21,5 +23,9 @@ bool foreach_digest2(TCG_DIGEST2 const *event_hdr, size_t count, size_t size,
                      DIGEST2_CALLBACK callback, void *data);
 bool foreach_event2(TCG_EVENT_HEADER2 const *event_first, size_t size,
                     EVENT2_CALLBACK callback, void *data);
+bool foreach_event2_full(TCG_EVENT_HEADER2 const *eventhdr_start, size_t size,
+                         EVENT2_CALLBACK event2hdr_cb,
+                         DIGEST2_CALLBACK digest2_cb,
+                         EVENT2DATA_CALLBACK event2_cb, void *data);
 
 #endif
