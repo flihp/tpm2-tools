@@ -61,10 +61,15 @@ bool foreach_digest2(TCG_DIGEST2 const *digest, size_t count, size_t size,
     return ret;
 }
 
-bool foreach_event2_full(TCG_EVENT_HEADER2 const *eventhdr_start, size_t size,
-                         EVENT2_CALLBACK event2hdr_cb,
-                         DIGEST2_CALLBACK digest2_cb,
-                         EVENT2DATA_CALLBACK event2_cb, void *data) {
+bool foreach_event2(TCG_EVENT_HEADER2 const *eventhdr_start, size_t size,
+                    EVENT2_CALLBACK event2hdr_cb,
+                    DIGEST2_CALLBACK digest2_cb,
+                    EVENT2DATA_CALLBACK event2_cb, void *data) {
+
+    if (eventhdr_start == NULL) {
+        LOG_ERR("invalid parameter");
+        return false;
+    }
 
     TCG_EVENT_HEADER2 const *eventhdr;
     size_t event_size;
@@ -122,7 +127,7 @@ bool foreach_event2_full(TCG_EVENT_HEADER2 const *eventhdr_start, size_t size,
 
         /* event data callback */
         if (event2_cb != NULL) {
-            ret = event2_cb(event, false, data);
+            ret = event2_cb(event, eventhdr->EventType, false, data);
             if (ret != true) {
                 return false;
             }
@@ -130,23 +135,4 @@ bool foreach_event2_full(TCG_EVENT_HEADER2 const *eventhdr_start, size_t size,
     }
 
     return true;
-}
-/*
- * This function takes a reference to the start of the binary event log
- * and invokes a callback for each event structure from the log. The 'size'
- * parameter is the total size of the buffer holding the log. As the log is
- * parsed the size is consulted to ensure appropriate memory accesses and
- * to guarantee the callback is passed a valid / complete event structure.
- * Callers implementing callbacks do not need to implement these checks
- * themselves.
- */
-bool foreach_event2(TCG_EVENT_HEADER2 const *eventhdr_start, size_t size,
-                    EVENT2_CALLBACK callback, void *data) {
-
-    if (eventhdr_start == NULL || callback == NULL) {
-        LOG_ERR("invalid parameter");
-        return false;
-    }
-
-    return foreach_event2_full(eventhdr_start, size, callback, NULL, NULL, data);
 }
