@@ -61,6 +61,41 @@ bool foreach_digest2(TCG_DIGEST2 const *digest, size_t count, size_t size,
     return ret;
 }
 
+bool parse_event2(TCG_EVENT_HEADER2 const *eventhdr, size_t buf_size,
+                  size_t *event_size, size_t *digests_size) {
+
+    bool ret;
+
+    if (buf_size < sizeof(*eventhdr)) {
+        LOG_ERR("corrupted log, insufficient size for event header: %zu", buf_size);
+        return false;
+    }
+    *event_size = sizeof(*eventhdr);
+
+    ret = foreach_digest2(eventhdr->Digests, eventhdr->DigestCount,
+                          buf_size - sizeof(*eventhdr),
+                          digest2_accumulator_callback, digests_size);
+    if (ret != true) {
+        return false;
+    }
+    *event_size += *digests_size;
+
+    TCG_EVENT2 *event = (TCG_EVENT2*)((uintptr_t)eventhdr + *event_size);
+    if (buf_size < *event_size + sizeof(*event)) {
+        LOG_ERR("corrupted log: size insufficient for EventSize");
+        return false;
+    }
+    *event_size += sizeof(*event);
+
+    if (buf_size < *event_size + event->EventSize) {
+        LOG_ERR("size insufficient for event data");
+        return false;
+    }
+    *event_size += event->EventSize;
+
+    return true;
+}
+
 bool foreach_event2(TCG_EVENT_HEADER2 const *eventhdr_start, size_t size,
                     EVENT2_CALLBACK event2hdr_cb,
                     DIGEST2_CALLBACK digest2_cb,
@@ -81,33 +116,13 @@ bool foreach_event2(TCG_EVENT_HEADER2 const *eventhdr_start, size_t size,
          size -= event_size) {
 
         size_t digests_size = 0;
-        if (size < sizeof(*eventhdr)) {
-            LOG_ERR("corrupted log, insufficient size for event header: %zu", size);
-            return false;
-        }
-        event_size = sizeof(*eventhdr);
 
-        ret = foreach_digest2(eventhdr->Digests, eventhdr->DigestCount,
-                              size - sizeof(*eventhdr),
-                              digest2_accumulator_callback, &digests_size);
-        if (ret != true) {
-            return false;
+        ret = parse_event2(eventhdr, size, &event_size, &digests_size);
+        if (!ret) {
+            return ret;
         }
-        event_size += digests_size;
 
-        TCG_EVENT2 *event = (TCG_EVENT2*)((uintptr_t)eventhdr + event_size);
-        if (size < event_size + sizeof(*event)) {
-            LOG_ERR("corrupted log: size insufficient for EventSize");
-            return false;
-        }
-        event_size += sizeof(*event);
-
-        if (size < event_size + event->EventSize) {
-            LOG_ERR("size insufficient for event data");
-            return false;
-        }
-        event_size += event->EventSize;
-
+        TCG_EVENT2 *event = (TCG_EVENT2*)((uintptr_t)eventhdr->Digests + digests_size);
         /* event header callback */
         if (event2hdr_cb != NULL) {
             ret = event2hdr_cb(eventhdr, event_size, data);
